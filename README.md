@@ -184,7 +184,7 @@ EOL
 nano /home/ubuntu/baserow/docker-compose.yml
 ```
 
-services:セクションとbackend:セクションを見つけ、以下の内容に全部を書き換えます。
+services:セクションを見つけ、以下の内容に全部を書き換えます。
 
 起動順書の依存関係の追加とCaddyfileのディレクトリ、BASEROW_CADDY_ADDRESSES:-:を80から443へ書き替えています。
 
@@ -212,19 +212,6 @@ services:
       - caddy_data:/data
     depends_on: #追記
       - backend #追記
-    networks:
-      local:
-
-  backend:
-    image: baserow/backend:1.25.1
-    restart: unless-stopped
-    environment:
-      <<: *backend-variables
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - media:/baserow/media
     networks:
       local:
 ```
@@ -287,3 +274,67 @@ Docker Composeの停止コマンド
 ```sh
 sudo docker compose down
 ```
+
+##エラーの時は以下の手順で問題の原因を特定し、解決します。
+
+### 1. サービスのログを確認
+
+各サービスのログを確認して、具体的なエラーメッセージを取得します。以下のコマンドを順に実行してください。
+
+```sh
+sudo docker compose logs backend
+sudo docker compose logs web-frontend
+sudo docker compose logs db
+sudo docker compose logs redis
+sudo docker compose logs celery
+sudo docker compose logs celery-export-worker
+sudo docker compose logs celery-beat-worker
+```
+
+### 2. 共通の問題と解決方法
+
+#### データベース接続の問題
+- `backend`サービスのログにデータベース接続エラーが表示されている場合、データベースが正しく起動していることを確認してください。
+
+```sh
+sudo docker compose logs db
+```
+
+データベースコンテナが正しく起動していない場合、以下のようなエラーが表示されることがあります。
+- データベースの設定（ユーザー名、パスワード、データベース名）が正しいか確認します。
+- `.env`ファイルの設定を再確認します。
+
+#### Redis接続の問題
+- `backend`サービスのログにRedis接続エラーが表示されている場合、Redisが正しく起動していることを確認してください。
+
+```sh
+sudo docker compose logs redis
+```
+
+#### フロントエンドの問題
+- `web-frontend`サービスのログにエラーが表示されている場合、以下のコマンドを実行して詳細を確認します。
+
+```sh
+sudo docker compose logs web-frontend
+```
+
+#### マイグレーションの問題
+- データベースのマイグレーションが必要な場合があります。以下のコマンドを実行してマイグレーションを実行します。
+
+```sh
+sudo docker compose exec backend python manage.py migrate
+```
+
+### 3. 依存関係の確認
+- `docker-compose.yml`ファイルで各サービスが正しく依存していることを確認します。
+
+### 4. コンテナの再起動
+すべてのサービスが正しく起動していることを確認した後、再度コンテナを再起動します。
+
+```sh
+sudo docker compose down
+sudo docker compose up -d
+```
+
+### 5. 再度アクセスの確認
+これで問題が解決し、`https://baserow.revol-one.com`にアクセスできることを確認してください。
