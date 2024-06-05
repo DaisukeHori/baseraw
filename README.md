@@ -208,7 +208,7 @@ services:
     restart: unless-stopped
     environment:
       # Controls what port the Caddy server binds to inside its container.
-      BASEROW_CADDY_ADDRESSES: ${BASEROW_CADDY_ADDRESSES:-:443}
+      BASEROW_CADDY_ADDRESSES: ${BASEROW_CADDY_ADDRESSES:-:443} #80から443へ変更
       PRIVATE_WEB_FRONTEND_URL: ${PRIVATE_WEB_FRONTEND_URL:-http://web-frontend:3000}
       PRIVATE_BACKEND_URL: ${PRIVATE_BACKEND_URL:-http://backend:8000}
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL:-}
@@ -216,12 +216,12 @@ services:
       - "${HOST_PUBLISH_IP:-0.0.0.0}:${WEB_FRONTEND_PORT:-80}:80"
       - "${HOST_PUBLISH_IP:-0.0.0.0}:${WEB_FRONTEND_SSL_PORT:-443}:443"
     volumes:
-      - /home/ubuntu/baserow/Caddyfile:/etc/caddy/Caddyfile
+      - /home/ubuntu/baserow/Caddyfile:/etc/caddy/Caddyfile　 #${xxx}から/home/ubuntu/baserow/へ変更
       - media:/baserow/media
       - caddy_config:/config
       - caddy_data:/data
-    depends_on:
-      - backend
+    depends_on: #追記
+      - backend #追記
     networks:
       local:
 
