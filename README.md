@@ -119,11 +119,11 @@ nano .env
 次の内容を追加または編集します：
 
 ```env
-SECRET_KEY=supersecuresecretkey1234567890!@#$%
-DATABASE_PASSWORD=securepassword123
-REDIS_PASSWORD=anothersecurepassword456
-BASEROW_PUBLIC_URL=https://baserow.revol-one.com
-BASEROW_CADDY_ADDRESSES=https://baserow.revol-one.com
+SECRET_KEY=supersecuresecretkey1234567890!@#$% #←追記
+DATABASE_PASSWORD=securepassword123　#←追記
+REDIS_PASSWORD=anothersecurepassword456　#←追記
+BASEROW_PUBLIC_URL=https://baserow.revol-one.com　#←追記
+BASEROW_CADDY_ADDRESSES=https://baserow.revol-one.com　#←新規！！
 ```
 
 ### 4. Caddyfileの編集
@@ -132,6 +132,7 @@ BASEROW_CADDY_ADDRESSES=https://baserow.revol-one.com
 
 your-email@example.comは Let's Encryptの通知を受け取るためのメールアドレスです。自分のメアドなんでもOKです。
 
+下記コマンドをメモ帳に貼って書き換えてから貼り付けて使ってください
 ```sh
 cat <<EOL > /home/ubuntu/baserow/Caddyfile
 {
