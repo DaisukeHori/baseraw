@@ -287,3 +287,13 @@ https://baserow.revol-one.com
 ```
 
 これで、BaserowのセットアップとSSL化が完了し、安全にアクセスできるようになります。
+
+
+
+
+### おまけ
+Docker Composeの停止コマンド
+
+```sh
+sudo docker compose down
+```
