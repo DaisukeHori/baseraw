@@ -186,8 +186,61 @@ cat <<EOL > /home/ubuntu/baserow/Caddyfile
 }
 EOL
 ```
+### 5.Docker Composeファイルの編集
 
-### 5. Docker ComposeでBaserowを起動
+次に、docker-compose.ymlファイルを以下の内容に編集します。
+
+```sh
+nano /home/ubuntu/baserow/docker-compose.yml
+```
+
+services:セクションとbackend:セクションを見つけ、以下の内容に全部を書き換えます。
+
+起動順書の依存関係の追加とCaddyfileのディレクトリ、BASEROW_CADDY_ADDRESSES:-:を80から443へ書き替えています。
+
+```yaml
+services:
+  # A caddy reverse proxy sitting in-front of all the services. Responsible for routing
+  # requests to either the backend or web-frontend and also serving user uploaded files
+  # from the media volume.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      # Controls what port the Caddy server binds to inside its container.
+      BASEROW_CADDY_ADDRESSES: ${BASEROW_CADDY_ADDRESSES:-:443}
+      PRIVATE_WEB_FRONTEND_URL: ${PRIVATE_WEB_FRONTEND_URL:-http://web-frontend:3000}
+      PRIVATE_BACKEND_URL: ${PRIVATE_BACKEND_URL:-http://backend:8000}
+      BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL:-}
+    ports:
+      - "${HOST_PUBLISH_IP:-0.0.0.0}:${WEB_FRONTEND_PORT:-80}:80"
+      - "${HOST_PUBLISH_IP:-0.0.0.0}:${WEB_FRONTEND_SSL_PORT:-443}:443"
+    volumes:
+      - /home/ubuntu/baserow/Caddyfile:/etc/caddy/Caddyfile
+      - media:/baserow/media
+      - caddy_config:/config
+      - caddy_data:/data
+    depends_on:
+      - backend
+    networks:
+      local:
+
+  backend:
+    image: baserow/backend:1.25.1
+    restart: unless-stopped
+    environment:
+      <<: *backend-variables
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - media:/baserow/media
+    networks:
+      local:
+```
+
+
+### 6. Docker ComposeでBaserowを起動
 
 次に、Docker Composeを使用してBaserowを起動します。
 
@@ -195,7 +248,7 @@ EOL
 sudo docker compose up -d
 ```
 
-### 6. ログの確認
+### 7. ログの確認
 
 Caddyが正しく起動しているかどうか、ログを確認します。
 
@@ -203,7 +256,7 @@ Caddyが正しく起動しているかどうか、ログを確認します。
 sudo docker compose logs caddy
 ```
 
-### 7. EC2インスタンスのセキュリティグループ設定
+### 8. EC2インスタンスのセキュリティグループ設定
 
 EC2インスタンスのセキュリティグループに、以下のポートが開いていることを確認します：
 
@@ -211,7 +264,7 @@ EC2インスタンスのセキュリティグループに、以下のポート�
 - HTTP: 80
 - HTTPS: 443
 
-### 8. ドメインの設定
+### 9. ドメインの設定
 
 ドメインプロバイダで、`baserow.revol-one.com`がEC2インスタンスのパブリックIPアドレスまたはパブリックDNSにポイントしていることを確認します。
 
