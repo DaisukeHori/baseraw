@@ -119,11 +119,13 @@ nano .env
 次の内容を追加または編集します：
 
 ```env
-SECRET_KEY=supersecuresecretkey1234567890!@#$% #←追記
-DATABASE_PASSWORD=securepassword123　#←追記
-REDIS_PASSWORD=anothersecurepassword456　#←追記
-BASEROW_PUBLIC_URL=https://baserow.revol-one.com　#←追記
-BASEROW_CADDY_ADDRESSES=https://baserow.revol-one.com　#←新規！！
+#4つは追記
+SECRET_KEY=supersecuresecretkey1234567890!@#$%
+DATABASE_PASSWORD=securepassword123
+REDIS_PASSWORD=anothersecurepassword456
+BASEROW_PUBLIC_URL=https://baserow.revol-one.com
+#これだけ新規
+BASEROW_CADDY_ADDRESSES=https://baserow.revol-one.com
 ```
 
 ### 4. Caddyfileの編集
