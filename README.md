@@ -204,7 +204,7 @@ services:
       - "${HOST_PUBLISH_IP:-0.0.0.0}:${WEB_FRONTEND_PORT:-80}:80"
       - "${HOST_PUBLISH_IP:-0.0.0.0}:${WEB_FRONTEND_SSL_PORT:-443}:443"
     volumes:
-      - /home/ubuntu/baserow/Caddyfile:/etc/caddy/Caddyfile　 #${xxx}から/home/ubuntu/baserow/へ変更
+      - /home/ubuntu/baserow/Caddyfile:/etc/caddy/Caddyfile　 #$PWDから/home/ubuntu/baserow/へ変更
       - media:/baserow/media
       - caddy_config:/config
       - caddy_data:/data
