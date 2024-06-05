@@ -137,54 +137,42 @@ your-email@example.comは Let's Encryptの通知を受け取るためのメー�
 cat <<EOL > /home/ubuntu/baserow/Caddyfile
 {
     email your-email@example.com  # Let's Encryptの通知を受け取るためのメールアドレス
-    on_demand_tls {
-        ask http://backend:8000/api/builder/domains/ask-public-domain-exists/
-        interval 2m
-        burst 5
-    }
-
-    {\$BASEROW_CADDY_GLOBAL_CONF}
 }
 
-{\$BASEROW_CADDY_ADDRESSES} {
+https://baserow.revol-one.com {
     tls {
         on_demand
     }
 
-    @is_baserow_tool {
-        expression "{\$BASEROW_PUBLIC_URL}".contains({http.request.host})
+    handle /api/* {
+        reverse_proxy http://backend:8000
     }
 
-    handle @is_baserow_tool {
-        handle /api/* {
-            reverse_proxy http://backend:8000
+    handle /ws/* {
+        reverse_proxy http://backend:8000
+    }
+
+    handle_path /media/* {
+        @downloads {
+            query dl=*
         }
+        header @downloads Content-disposition "attachment; filename={query.dl}"
 
-        handle /ws/* {
-            reverse_proxy http://backend:8000
+        file_server {
+            root /baserow/media/
         }
+    }
 
-        handle_path /media/* {
-            @downloads {
-                query dl=*
-            }
-            header @downloads Content-disposition "attachment; filename={query.dl}"
-
-            file_server {
-                root /baserow/media/
-            }
-        }
-
-        handle_path /static/* {
-            file_server {
-                root /baserow/static/
-            }
+    handle_path /static/* {
+        file_server {
+            root /baserow/static/
         }
     }
 
     reverse_proxy http://web-frontend:3000
 }
 EOL
+
 ```
 ### 5.Docker Composeファイルの編集
 
