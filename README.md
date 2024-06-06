@@ -275,7 +275,7 @@ Docker Composeの停止コマンド
 sudo docker compose down
 ```
 
-##　エラーの時は
+## エラーの時は
 
 以下の手順で問題の原因を特定し、解決します。
 
